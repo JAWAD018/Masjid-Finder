@@ -1,0 +1,10 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Block unnecessary build files
+Disallow: /src/
+Disallow: /node_modules/
+
+# Sitemap link
+Sitemap: https://masjidfinder.vercel.app/sitemap.xml
