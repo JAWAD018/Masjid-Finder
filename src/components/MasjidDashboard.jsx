@@ -889,7 +889,7 @@ const MasjidDashboard = () => {
                       <Clock className="w-5 h-5 text-green-600" />
                       <span>Prayer Times</span>
                     </h3>
-                    {user && (
+                     
                       <button
                         onClick={() => setEditingPrayerTimes(selectedMasjid)}
                         className="text-green-600 hover:text-green-700 p-1 rounded flex items-center space-x-1 text-sm"
@@ -897,7 +897,7 @@ const MasjidDashboard = () => {
                         <Edit3 className="w-4 h-4" />
                         <span>Update</span>
                       </button>
-                    )}
+                    
                   </div>
                   <div className="grid grid-cols-1 gap-3">
                     {Object.entries(selectedMasjid.prayerTimes).map(([prayer, time]) => {
