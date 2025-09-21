@@ -7,7 +7,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import RatingModal from "./RatingModal";
 import { AiFillInstagram, AiFillLinkedin, AiFillStar, AiOutlineStar } from "react-icons/ai";
-import SecurePrayerTimesEditor from "./SecurePrayerTimesEditor.JSX";
+import SecurePrayerTimesEditor from "./SecurePrayerTimesEditor.jsx";
 
 // Prayer times utility
 const getPrayerTimes = () => {
