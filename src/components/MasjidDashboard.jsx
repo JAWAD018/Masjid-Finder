@@ -7,6 +7,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import RatingModal from "./RatingModal";
 import { AiFillInstagram, AiFillLinkedin, AiFillStar, AiOutlineStar } from "react-icons/ai";
+import SecurePrayerTimesEditor from "./SecurePrayerTimesEditor.JSX";
 
 // Prayer times utility
 const getPrayerTimes = () => {
@@ -124,6 +125,9 @@ const MasjidDashboard = () => {
       setLoading(false);
     }
   };
+
+
+
 
   // Add sample data to Firebase
   // const addSampleData = async () => {
@@ -1059,12 +1063,12 @@ const MasjidDashboard = () => {
       )}
 
       {/* Prayer Times Editor Modal */}
-      {editingPrayerTimes && (
-        <PrayerTimesEditor
-          masjid={editingPrayerTimes}
-          onClose={() => setEditingPrayerTimes(null)}
-          onSave={handleMasjidUpdate}
-        />
+     {editingPrayerTimes && (
+  <SecurePrayerTimesEditor
+    masjid={editingPrayerTimes}
+    onClose={() => setEditingPrayerTimes(null)}
+    onSave={handleMasjidUpdate}
+  />
       )}
 
       <RatingModal
