@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { MapPin, Search, Plus, X, Navigation, Clock, Phone, Globe, Star, Filter, Menu, Bell, Edit3, Save, Calendar, ChevronRight, BellRing, User, LogOut, LogIn } from "lucide-react";
+import { MapPin, Search, Plus, X, Navigation, Clock, Phone, Globe, Star, Filter, Menu, Edit3, BellRing, User, BookOpen } from "lucide-react";
 import AddMasjidModal from "./AddMasjidModal";
 import firebase from "../firebase/firebaseService";
-import PrayerTimesEditor from "./PrayerTimesEditor";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
 import RatingModal from "./RatingModal";
 import { AiFillInstagram, AiFillLinkedin, AiFillStar, AiOutlineStar } from "react-icons/ai";
 import SecurePrayerTimesEditor from "./SecurePrayerTimesEditor.jsx";
+import HadithSection from "./HadithSection.jsx";
 
 // Prayer times utility
 const getPrayerTimes = () => {
@@ -88,6 +86,7 @@ const MasjidDashboard = () => {
   const [syncStatus, setSyncStatus] = useState('idle'); // idle, syncing, synced, error
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [ratingMasjid, setRatingMasjid] = useState(null)
+
 
   // Initialize Firebase and load data
   useEffect(() => {
@@ -746,39 +745,9 @@ const MasjidDashboard = () => {
             </div>
           </div>
         ) : (
-         <div className="h-full bg-gray-200 flex items-center justify-center">
-  <div className="text-center p-8 bg-white rounded-2xl shadow-lg max-w-md mx-4">
-    <MapPin className="w-16 h-16 text-green-600 mx-auto mb-4" />
-    <h3 className="text-xl font-bold text-gray-800 mb-2">Find Masjids Nearby</h3>
-    <p className="text-gray-600 mb-4">
-      Never miss a prayer while traveling. Explore mosques near you with accurate prayer times and easy directions.
-    </p>
-    <div className="space-y-2 text-sm text-gray-500">
-      <p>• Discover nearby masjids in seconds</p>
-      <p>• Add new masjids to the map</p>
-      <p>• Live prayer time updates</p>
-      <p>• Islamic / Hijri calendar integration</p>
-      <p>• Instant directions to your chosen masjid</p>
-      <p>• Notifications for upcoming prayers</p>
+         <div className="h-screen bg-gray-200 flex items-center justify-center">
+      <HadithSection />
     </div>
-    <div className="mt-6 space-y-2">
-      {sortedMasjids.slice(0, 3).map(m => (
-        <div key={m.id} className="flex justify-between items-center p-2 bg-green-50 rounded-lg">
-          <span className="text-sm font-medium text-green-800">{m.name}</span>
-          <button
-            onClick={() => {
-              const url = `https://maps.google.com/maps?daddr=${m.location.lat},${m.location.lng}`;
-              window.open(url, '_blank');
-            }}
-            className="text-green-600 hover:text-green-700"
-          >
-            <Navigation className="w-4 h-4" />
-          </button>
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
         )}
       </div>
 
@@ -837,7 +806,7 @@ const MasjidDashboard = () => {
   {[
     { tab: "prayer-times", label: "Prayer", icon: <Clock className="w-4 h-4" /> },
     { tab: "list", label: "List", icon: <Menu className="w-4 h-4" /> },
-    { tab: "map", label: "Map", icon: <MapPin className="w-4 h-4" /> },
+    { tab: "hadith", label: "Hadith", icon: <BookOpen className="w-4 h-4" /> },
     { tab: "about", label: "About", icon: <User className="w-4 h-4" /> },
   ].map(({ tab, label, icon }) => (
     <button
