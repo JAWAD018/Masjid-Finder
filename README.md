@@ -1,12 +1,41 @@
-# React + Vite
+# 🕌 Masjid Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Masjid Finder is a simple web app that helps Muslims easily find nearby masjids 🕌 and view accurate prayer times.  
+The goal is to build a **community-driven platform** where anyone can add masjids and update their timings so others can benefit.  
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
+- 🔍 Search nearby masjids by location
+- 🕒 View daily prayer times (Jamaat / Iqamah)
+- ➕ Add new masjids and timings to help the community
+- 🌍 Community-verified updates for accuracy
+- 📱 Mobile-friendly responsive design
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📖 Story Behind
+While traveling, I often struggled to find nearby masjids and their **exact prayer timings**.  
+Google Maps shows masjids, but **timings are missing or outdated**.  
+That’s why I built **Masjid Finder** — a platform where people can **easily find masjids and contribute timings** to help others pray with jamaat.
+
+---
+
+## 🛠️ Tech Stack
+- **Frontend**: React.js (Vite) ⚡
+- **Backend**: Node.js / Express (planned)
+- **Database**: Firebase / Firestore (for masjid listings & timings)
+- **Deployment**: Vercel
+
+---
+
+## 📷 Screenshots
+
+
+---
+
+## 🔧 Installation & Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/JAWAD018/masjid-finder.git
+   cd masjidfinder
