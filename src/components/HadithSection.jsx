@@ -78,27 +78,40 @@ const HadithSection = () => {
   return (
     <div className="h-full bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 overflow-y-auto">
       {/* Header Section */}
-      <div className="p-6 bg-gradient-to-r from-green-600 to-emerald-600 text-white relative overflow-hidden">
+      <div className="p-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white relative overflow-hidden">
         {/* Decorative Pattern */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
         
         <div className="relative z-10">
-          <div className="flex items-center space-x-3 mb-2">
-            <div className="bg-white/20 p-2 rounded-full">
-              <Book className="w-6 h-6" />
+          <div className="flex items-center justify-center space-x-3 mb-2">
+            <div className="bg-white/20 p-2  rounded-full">
+              <Book className="w-4 h-4" />
             </div>
-            <h1 className="text-2xl font-bold">Daily Hadith</h1>
-          </div>
-          <div className="flex items-center space-x-2 text-green-100">
-            <Calendar className="w-4 h-4" />
-            <p className="text-sm">{formattedDate}</p>
+            <h1 className="text-xl font-bold">Daily Hadith</h1>
           </div>
         </div>
       </div>
-
+            {/* Prayer Reminder */}
+          <div className="p-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
+              <div className="flex items-start space-x-3">
+                <div className="bg-yellow-200 rounded-full p-2">
+                  <Calendar className="w-4 h-4 text-yellow-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-yellow-800">Daily Reminder</h4>
+                  <p className="text-yellow-700 text-sm mt-1">
+                    "And whoever relies upon Allah - then He is sufficient for him. 
+                    Indeed, Allah will accomplish His purpose." - Quran 65:3
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
       {/* Main Content */}
       <div className="p-6">
+  
         {loading ? (
           <div className="bg-white rounded-3xl shadow-lg border border-green-100 p-8">
             <div className="text-center">
@@ -218,21 +231,7 @@ const HadithSection = () => {
               </div>
             </div>
 
-            {/* Prayer Reminder */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
-              <div className="flex items-start space-x-3">
-                <div className="bg-yellow-200 rounded-full p-2">
-                  <Calendar className="w-4 h-4 text-yellow-700" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-yellow-800">Daily Reminder</h4>
-                  <p className="text-yellow-700 text-sm mt-1">
-                    "And whoever relies upon Allah - then He is sufficient for him. 
-                    Indeed, Allah will accomplish His purpose." - Quran 65:3
-                  </p>
-                </div>
-              </div>
-            </div>
+
           </div>
         )}
       </div>

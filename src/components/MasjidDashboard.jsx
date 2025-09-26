@@ -750,7 +750,7 @@ const MasjidDashboard = () => {
             </div>
           </div>
         ) : (
-          <div className="h-screen bg-gray-200 flex items-center justify-center">
+          <div className="h-full bg-gray-200 flex items-center justify-center">
             <HadithSection />
           </div>
         )}
