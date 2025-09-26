@@ -4,6 +4,7 @@ import { X, Save, Phone, Send, AlertCircle, Shield, Loader } from "lucide-react"
 
 const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
   const [step, setStep] = useState('phone'); // 'phone' or 'edit'
+  const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [prayerTimes, setPrayerTimes] = useState(masjid.prayerTimes || {
     fajr: '05:30',
@@ -25,11 +26,17 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
   // Handle phone number submission
   const handlePhoneSubmit = async () => {
     setError('');
-    
+
+    if (!name.trim()) {
+      setError('Please enter your name');
+      return;
+    }
+
     if (!phoneNumber.trim()) {
       setError('Please enter your phone number');
       return;
     }
+
 
     if (!isValidPhone(phoneNumber)) {
       setError('Please enter a valid phone number');
@@ -37,7 +44,7 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
     }
 
     setLoading(true);
-    
+
     try {
       // Check spam prevention - limit 3 requests per phone per day
       const today = new Date();
@@ -57,7 +64,7 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
       // Store phone number and proceed to editing
       setStep('edit');
     } catch (err) {
-      setError('Error validating phone number. Please try again.');
+      setError('Error validating phone number. Please try again.,', err);
     } finally {
       setLoading(false);
     }
@@ -78,12 +85,13 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
     }
 
     setLoading(true);
-    
+
     try {
       // Create update request in Firestore
       const requestData = {
         masjidId: masjid.id,
         masjidName: masjid.name,
+        name: name.trim(),
         phoneNumber: phoneNumber.trim(),
         currentTimes: masjid.prayerTimes,
         requestedTimes: prayerTimes,
@@ -124,7 +132,7 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
       }
 
       setSuccess(true);
-      
+
       // Auto-close after showing success
       setTimeout(() => {
         onClose();
@@ -183,7 +191,7 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
                 Your prayer time update request has been sent to the masjid administrators for review.
               </p>
               <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
-                <p>You will be contacted at <strong>{phoneNumber}</strong> once your request is processed.</p>
+                <p>Thank You {name}.</p>
               </div>
             </div>
           ) : step === 'phone' ? (
@@ -205,6 +213,20 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
                   <span className="text-red-700 text-sm">{error}</span>
                 </div>
               )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Your Name *
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your full name"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  disabled={loading}
+                />
+              </div>
+
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -297,9 +319,8 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
                           type="time"
                           value={time}
                           onChange={(e) => setPrayerTimes({ ...prayerTimes, [prayer]: e.target.value })}
-                          className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                            isChanged ? 'border-green-300 bg-green-50' : 'border-gray-300'
-                          }`}
+                          className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${isChanged ? 'border-green-300 bg-green-50' : 'border-gray-300'
+                            }`}
                           disabled={loading}
                         />
                       </div>
@@ -355,7 +376,7 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
                 </button>
                 <button
                   onClick={handleRequestSubmit}
-                //   disabled={loading || !reason.trim() || reason.length < 10 || getChangedTimes().length === 0}
+                  //   disabled={loading || !reason.trim() || reason.length < 10 || getChangedTimes().length === 0}
                   className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   {loading ? (
