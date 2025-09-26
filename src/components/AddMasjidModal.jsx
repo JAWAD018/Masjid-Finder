@@ -35,10 +35,11 @@ const MapResizeFix = () => {
 
 const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
   const [formData, setFormData] = useState({
+    userName: "",
     name: "",
     address: "",
     phone: "",
-    website: "",
+    // website: "",
     description: "",
     location: userLocation || { lat: 17.385, lng: 78.486 },
     facilities: [],
@@ -85,7 +86,7 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.address || !formData.location) {
+    if (!formData.name || !formData.address || !formData.location ||!formData.userName ) {
       alert("Please fill in required fields and select a location");
       return;
     }
@@ -131,6 +132,13 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
           {/* Basic Info */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Basic Information</h3>
+             <input
+              type="text"
+              placeholder="Your Name *"
+              value={formData.userName}
+              onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+              className="w-full px-3  py-2 border rounded-lg"
+            />
             <input
               type="text"
               placeholder="Masjid Name *"
@@ -143,7 +151,7 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               className="w-full px-3 py-2 border rounded-lg"
-              rows={2}
+              rows={3}
             />
           </div>
 

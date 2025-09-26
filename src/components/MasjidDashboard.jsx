@@ -496,7 +496,12 @@ const MasjidDashboard = () => {
                       <div className="p-5">
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex-1">
-                            <h2 className="font-bold text-lg text-gray-800 mb-1">{m.name}</h2>
+                            <h2
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedMasjid(m);
+                              }}
+                              className="font-bold text-lg text-gray-800 mb-1">{m.name}</h2>
                             <div className="flex items-start space-x-2 mb-2">
                               <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                               <p className="text-sm text-gray-600 leading-relaxed">{m.address}</p>
@@ -745,84 +750,83 @@ const MasjidDashboard = () => {
             </div>
           </div>
         ) : (
-         <div className="h-screen bg-gray-200 flex items-center justify-center">
-      <HadithSection />
-    </div>
+          <div className="h-screen bg-gray-200 flex items-center justify-center">
+            <HadithSection />
+          </div>
         )}
       </div>
 
-{activeTab === "about" && (
-<div className="bg-green-50 py-10 h-full px-4 mt-8">
-  <div className="max-w-2xl mx-auto text-center space-y-6">
-    <h2 className="text-2xl font-bold text-green-800">About the Creator</h2>
-    
-    <p className="text-gray-700 text-sm md:text-base">
-      Assalamu Alaikum! I'm <span className="font-semibold">Mohammed Jawad</span> from Hyderabad.  
-      While traveling or visiting new places, I often struggled to find nearby masjids and accurate prayer times of salah.  
-      Sometimes I would even miss <span className="font-medium">Zuhr</span> or have trouble making it to <span className="font-medium">Jummah</span> on time.  
-    </p>
-    
-    <p className="text-gray-700 text-sm md:text-base">
-      That’s when I thought — why not build a simple WebApp to help people like me?  
-      <span className="font-semibold">Masjid Finder</span> helps you quickly locate nearby mosques, see prayer times, and navigate there easily.  
-      My goal is to make it easier for everyone to pray on time, wherever they are.
-    </p>
-    
-    <p className="text-gray-600 text-sm md:text-base">
-      Feel free to connect with me on social media:
-    </p>
-    
-    <div className="flex justify-center space-x-6 mb-4">
-      <a
-        href="https://www.instagram.com/Jawad_0018"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-pink-500 hover:text-pink-600 transition-colors"
-      >
-        <AiFillInstagram className="w-8 h-8" />
-      </a>
-      <a
-        href="https://www.linkedin.com/in/mohammed-jawad018"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:text-blue-700 transition-colors"
-      >
-        <AiFillLinkedin className="w-8 h-8" />
-      </a>
-    </div>
+      {activeTab === "about" && (
+        <div className="bg-green-50 py-10 h-full px-4 mt-8">
+          <div className="max-w-2xl mx-auto text-center space-y-6">
+            <h2 className="text-2xl font-bold text-green-800">About the Creator</h2>
 
-    <p className="text-gray-500 text-xs mt-4">
-      &copy; {new Date().getFullYear()} Mohammed Jawad. All rights reserved.
-    </p>
-  </div>
-</div>
+            <p className="text-gray-700 text-sm md:text-base">
+              Assalamu Alaikum! I'm <span className="font-semibold">Mohammed Jawad</span> from Hyderabad.
+              While traveling or visiting new places, I often struggled to find nearby masjids and accurate prayer times of salah.
+              Sometimes I would even miss <span className="font-medium">Zuhr</span> or have trouble making it to <span className="font-medium">Jummah</span> on time.
+            </p>
 
-    )}
+            <p className="text-gray-700 text-sm md:text-base">
+              That’s when I thought — why not build a simple WebApp to help people like me?
+              <span className="font-semibold">Masjid Finder</span> helps you quickly locate nearby mosques, see prayer times, and navigate there easily.
+              My goal is to make it easier for everyone to pray on time, wherever they are.
+            </p>
+
+            <p className="text-gray-600 text-sm md:text-base">
+              Feel free to connect with me on social media:
+            </p>
+
+            <div className="flex justify-center space-x-6 mb-4">
+              <a
+                href="https://www.instagram.com/Jawad_0018"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-pink-500 hover:text-pink-600 transition-colors"
+              >
+                <AiFillInstagram className="w-8 h-8" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/mohammed-jawad018"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <AiFillLinkedin className="w-8 h-8" />
+              </a>
+            </div>
+
+            <p className="text-gray-500 text-xs mt-4">
+              &copy; {new Date().getFullYear()} Mohammed Jawad. All rights reserved.
+            </p>
+          </div>
+        </div>
+
+      )}
 
 
       {/* Bottom Navigation */}
       <div className="bg-white shadow-lg border-t border-gray-100">
-       <div className="flex border-t border-gray-100 bg-white shadow-lg">
-  {[
-    { tab: "prayer-times", label: "Prayer", icon: <Clock className="w-4 h-4" /> },
-    { tab: "list", label: "List", icon: <Menu className="w-4 h-4" /> },
-    { tab: "hadith", label: "Hadith", icon: <BookOpen className="w-4 h-4" /> },
-    { tab: "about", label: "About", icon: <User className="w-4 h-4" /> },
-  ].map(({ tab, label, icon }) => (
-    <button
-      key={tab}
-      onClick={() => setActiveTab(tab)}
-      className={`flex-1 py-2 text-xs font-medium transition-colors flex flex-col items-center justify-center space-y-1 ${
-        activeTab === tab
-          ? "text-green-600 border-t-2 border-green-600 bg-green-50"
-          : "text-gray-600 hover:text-green-600 hover:bg-green-50"
-      }`}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  ))}
-</div>
+        <div className="flex border-t border-gray-100 bg-white shadow-lg">
+          {[
+            { tab: "prayer-times", label: "Prayer", icon: <Clock className="w-4 h-4" /> },
+            { tab: "list", label: "List", icon: <Menu className="w-4 h-4" /> },
+            { tab: "hadith", label: "Hadith", icon: <BookOpen className="w-4 h-4" /> },
+            { tab: "about", label: "About", icon: <User className="w-4 h-4" /> },
+          ].map(({ tab, label, icon }) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex-1 py-2 text-xs font-medium transition-colors flex flex-col items-center justify-center space-y-1 ${activeTab === tab
+                  ? "text-green-600 border-t-2 border-green-600 bg-green-50"
+                  : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                }`}
+            >
+              {icon}
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
 
       </div>
 
@@ -831,26 +835,41 @@ const MasjidDashboard = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6 rounded-t-2xl">
+            <div className="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-600 text-white p-5 rounded-t-2xl">
               <div className="flex justify-between items-start">
                 <div className="pr-4">
                   <h2 className="text-2xl font-bold mb-1">{selectedMasjid.name}</h2>
                   {selectedMasjid.rating && (
                     <div className="flex items-center space-x-2">
                       <div className="flex">{renderStars(selectedMasjid.rating)}</div>
-                      <span className="text-green-100">({selectedMasjid.rating || 0} Rating)</span>
+                      <span className="text-green-100">
+                        ({selectedMasjid.rating || 0} Rating)
+                      </span>
                     </div>
-
                   )}
                 </div>
-                <button
-                  onClick={() => setSelectedMasjid(null)}
-                  className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
-                >
-                  <X className="w-6 h-6" />
-                </button>
+
+                {/* Right Side */}
+                <div className="flex flex-col items-end">
+                  <button
+                    onClick={() => setSelectedMasjid(null)}
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                  {/* Created by - hidden on small screens */}
+                  <span className="hidden sm:block text-xs text-green-100 mt-1">
+                    Added by {selectedMasjid.userName}
+                  </span>
+                </div>
+              </div>
+
+              {/* Mobile version - show at bottom */}
+              <div className="sm:hidden text-right text-xs text-green-100 mt-2">
+                Added by {selectedMasjid.userName || "Anonymous"}
               </div>
             </div>
+
 
             {/* Modal Content */}
             <div className="p-6 space-y-6">
@@ -862,15 +881,15 @@ const MasjidDashboard = () => {
                       <Clock className="w-5 h-5 text-green-600" />
                       <span>Prayer Times</span>
                     </h3>
-                     
-                      <button
-                        onClick={() => setEditingPrayerTimes(selectedMasjid)}
-                        className="text-green-600 hover:text-green-700 p-1 rounded flex items-center space-x-1 text-sm"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                        <span>Update</span>
-                      </button>
-                    
+
+                    <button
+                      onClick={() => setEditingPrayerTimes(selectedMasjid)}
+                      className="text-green-600 hover:text-green-700 p-1 rounded flex items-center space-x-1 text-sm"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                      <span>Update</span>
+                    </button>
+
                   </div>
                   <div className="grid grid-cols-1 gap-3">
                     {Object.entries(selectedMasjid.prayerTimes).map(([prayer, time]) => {
@@ -975,7 +994,7 @@ const MasjidDashboard = () => {
               {/* Action Buttons */}
               <div className="flex space-x-3 pt-4 border-t border-gray-100">
                 {/* Call Button */}
-                <button
+                {/* <button
                   onClick={() => {
                     if (selectedMasjid.phone) {
                       window.open(`tel:${selectedMasjid.phone}`, '_self');
@@ -986,7 +1005,7 @@ const MasjidDashboard = () => {
                 >
                   <Phone className="w-4 h-4" />
                   <span>Call</span>
-                </button>
+                </button> */}
 
                 {/* Directions Button */}
                 <button
@@ -1010,9 +1029,7 @@ const MasjidDashboard = () => {
                   <AiFillStar className="w-4 h-4" />
                   <span>Rate</span>
                 </button>
-
               </div>
-
 
 
             </div>
@@ -1032,12 +1049,12 @@ const MasjidDashboard = () => {
       )}
 
       {/* Prayer Times Editor Modal */}
-     {editingPrayerTimes && (
-  <SecurePrayerTimesEditor
-    masjid={editingPrayerTimes}
-    onClose={() => setEditingPrayerTimes(null)}
-    onSave={handleMasjidUpdate}
-  />
+      {editingPrayerTimes && (
+        <SecurePrayerTimesEditor
+          masjid={editingPrayerTimes}
+          onClose={() => setEditingPrayerTimes(null)}
+          onSave={handleMasjidUpdate}
+        />
       )}
 
       <RatingModal
