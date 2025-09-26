@@ -31,6 +31,8 @@ That’s why I built **Masjid Finder** — a platform where people can **easily 
 
 ## 📷 Screenshots
 
+<img width="700" height="350" alt="Masjid Finder (1)" src="https://github.com/user-attachments/assets/6895b526-4ac9-4b68-a3ff-34b20bb0df71" />
+
 
 ---
 
