@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { MapPin, Search, Plus, X, Navigation, Clock, Phone, Globe, Star, Filter, Menu, Edit3, BellRing, User, BookOpen } from "lucide-react";
+import { MapPin, Search, Plus, X, Navigation, Clock, Phone, Globe, Star, Filter, Menu, Edit3, BellRing, User, BookOpen, Trophy } from "lucide-react";
 import AddMasjidModal from "./AddMasjidModal";
 import firebase from "../firebase/firebaseService";
 import RatingModal from "./RatingModal";
 import { AiFillInstagram, AiFillLinkedin, AiFillStar, AiOutlineStar } from "react-icons/ai";
 import SecurePrayerTimesEditor from "./SecurePrayerTimesEditor.jsx";
 import HadithSection from "./HadithSection.jsx";
+import Leaderboard from "./Leaderboard .jsx";
 
 // Prayer times utility
 const getPrayerTimes = () => {
@@ -756,6 +757,8 @@ const MasjidDashboard = () => {
         )}
       </div>
 
+        {activeTab === "leaderboard" && <Leaderboard firebase={firebase} />}
+        
       {activeTab === "about" && (
         <div className="bg-green-50 py-10 h-full px-4 mt-8">
           <div className="max-w-2xl mx-auto text-center space-y-6">
@@ -812,6 +815,7 @@ const MasjidDashboard = () => {
             { tab: "prayer-times", label: "Prayer", icon: <Clock className="w-4 h-4" /> },
             { tab: "list", label: "List", icon: <Menu className="w-4 h-4" /> },
             { tab: "hadith", label: "Hadith", icon: <BookOpen className="w-4 h-4" /> },
+            // { tab: "leaderboard", label: "Leaders", icon: <Trophy className="w-4 h-4" /> },
             { tab: "about", label: "About", icon: <User className="w-4 h-4" /> },
           ].map(({ tab, label, icon }) => (
             <button

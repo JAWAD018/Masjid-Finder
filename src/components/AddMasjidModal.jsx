@@ -33,7 +33,14 @@ const MapResizeFix = () => {
   }, [map]);
   return null;
 };
-
+const getAnonUserId = () => {
+  let id = localStorage.getItem("anonId");
+  if (!id) {
+    id = Math.random().toString(36).substring(2, 12); // 10 chars random
+    localStorage.setItem("anonId", id);
+  }
+  return id;
+};
 const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     userName: "",
@@ -102,7 +109,7 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
         ...formData,
         rating: 0,
         reviews: 0,
-        createdBy: anonymousId,
+        createdBy: getAnonUserId(),
         status: "active",
          createdAt: serverTimestamp(), 
       };
