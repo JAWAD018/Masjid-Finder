@@ -5,6 +5,7 @@ import L from "leaflet";
 import {  Clock } from "react-feather";
 import { X } from "react-feather";
 import "leaflet/dist/leaflet.css";
+import { serverTimestamp } from "firebase/firestore";
 
 // Fix Leaflet marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -103,6 +104,7 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
         reviews: 0,
         createdBy: anonymousId,
         status: "active",
+         createdAt: serverTimestamp(), 
       };
 
       const docRef = await firebase.addDoc("masjids", masjidData);
