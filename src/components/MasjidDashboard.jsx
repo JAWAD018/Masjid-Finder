@@ -326,7 +326,7 @@ const MasjidDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">Masjid Finder</h1>
-              <p className="text-green-100 text-sm">Find nearby mosques with prayer times</p>
+              <h3 className="text-sm">Nearby Masjids in your city</h3>
             </div>
             <div className="flex items-center space-x-4">
               {/* Sync Status */}

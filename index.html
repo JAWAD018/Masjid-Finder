@@ -11,7 +11,7 @@
     <link rel="manifest" href="/manifest.json" />
 
     <!-- Title & Description -->
-    <title>Masjid Finder - Locate Nearby Mosques & Prayer Times</title>
+    <title>Masjid Finder - Find Masjids Near Me & Prayer Times</title>
     <meta name="description" content="Easily find nearby mosques, check accurate prayer times, view Islamic/Hijri calendar, and get instant directions with Masjid Finder." />
     <!-- Keywords -->
     <meta name="keywords" content="Masjid Finder, Mosque Locator, Prayer Times, Islamic Calendar, Jummah Prayer, Muslim App" />
@@ -30,6 +30,28 @@
     <meta name="twitter:image" content="https://masjidfinder.vercel.app/masjid-finder-preview.png" />
 
     <meta name="google-site-verification" content="qHQLyL7WriiBUHr0RdE54fk0BvUh_7P7ERFqJdOhpG0" />
+
+    <!-- Structured Data for Local SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Masjid Finder",
+  "url": "https://masjidfinder.vercel.app/",
+  "logo": "https://masjidfinder.vercel.app/favicon.png",
+  "description": "Find nearby mosques, check prayer times, view Islamic calendar, and get directions instantly. Your local guide to Masjids near you.",
+  "sameAs": [
+    "https://www.instagram.com/masjidfinder"
+  ],
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://masjidfinder.vercel.app/?s={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+
   </head>
   <body>
     <div id="root"></div>
