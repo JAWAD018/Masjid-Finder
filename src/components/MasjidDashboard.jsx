@@ -7,11 +7,17 @@ import { AiFillInstagram, AiFillLinkedin, AiFillStar, AiOutlineStar } from "reac
 import SecurePrayerTimesEditor from "./SecurePrayerTimesEditor.jsx";
 import HadithSection from "./HadithSection.jsx";
 import Leaderboard from "./Leaderboard .jsx";
+import RamadanTimesCard from "./RamadanTimesCard.jsx";
+import useRamadanTimes from "../utils/useRamadanTimes.js";
+import TaraweehInfo from "./TaraweehInfo.jsx";
+
 
 // Prayer times utility
 const getPrayerTimes = () => {
   const now = new Date();
   const today = now.toDateString();
+
+
 
   return {
     date: today,
@@ -87,6 +93,14 @@ const MasjidDashboard = () => {
   const [syncStatus, setSyncStatus] = useState('idle'); // idle, syncing, synced, error
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [ratingMasjid, setRatingMasjid] = useState(null)
+  const [locationError, setLocationError] = useState(null);
+  const locationForRamadan = userLocation || {
+    lat: 17.3850,   // Hyderabad
+    lng: 78.4867,
+  };
+
+const { ramadanTimes, loading: ramadanLoading } =
+  useRamadanTimes(locationForRamadan);
 
 
   // Initialize Firebase and load data
@@ -126,74 +140,6 @@ const MasjidDashboard = () => {
     }
   };
 
-
-
-
-  // Add sample data to Firebase
-  // const addSampleData = async () => {
-  //   const sampleMasjids = [
-  //     {
-  //       name: "Masjid Al-Noor",
-  //       address: "123 Main Street, Hyderabad, Telangana",
-  //       phone: "+91 98765 43210",
-  //       website: "https://masjidalnoor.com",
-  //       description: "A beautiful mosque with modern facilities and excellent community programs.",
-  //       location: { lat: 17.385, lng: 78.486 },
-  //       rating: 4.8,
-  //       reviews: 156,
-  //       facilities: ["Parking", "Air Conditioning", "Prayer Mats", "Wudu Area"],
-  //       prayerTimes: {
-  //         fajr: '05:30',
-  //         dhuhr: '12:15',
-  //         asr: '15:30',
-  //         maghrib: '18:10',
-  //         isha: '19:25'
-  //       },
-  //       status: 'active'
-  //     },
-  //     {
-  //       name: "Jamia Masjid",
-  //       address: "456 Heritage Road, Old City, Hyderabad",
-  //       phone: "+91 98765 43211",
-  //       description: "Historic mosque serving the community for over 100 years.",
-  //       location: { lat: 17.375, lng: 78.476 },
-  //       rating: 4.6,
-  //       reviews: 89,
-  //       facilities: ["Library", "Madrasah", "Prayer Mats"],
-  //       prayerTimes: {
-  //         fajr: '05:35',
-  //         dhuhr: '12:20',
-  //         asr: '15:35',
-  //         maghrib: '18:15',
-  //         isha: '19:30'
-  //       },
-  //       status: 'active'
-  //     },
-  //     {
-  //       name: "Masjid Al-Huda",
-  //       address: "789 Community Center, Banjara Hills, Hyderabad",
-  //       phone: "+91 98765 43212",
-  //       description: "Modern community mosque with youth programs and Islamic education.",
-  //       location: { lat: 17.395, lng: 78.496 },
-  //       rating: 4.7,
-  //       reviews: 92,
-  //       facilities: ["Parking", "Library", "Air Conditioning", "Women Section"],
-  //       prayerTimes: {
-  //         fajr: '05:25',
-  //         dhuhr: '12:10',
-  //         asr: '15:25',
-  //         maghrib: '18:05',
-  //         isha: '19:20'
-  //       },
-  //       status: 'active'
-  //     }
-  //   ];
-
-  //   for (const masjid of sampleMasjids) {
-  //     await firebase.addDoc('masjids', masjid);
-  //   }
-  // };
-
   // Real-time updates listener
   useEffect(() => {
     const unsubscribe = firebase.onSnapshot('masjids', (data) => {
@@ -212,17 +158,33 @@ const MasjidDashboard = () => {
   }, []);
 
   // Get user location
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-      },
-      (err) => {
-        console.error(err);
-      },
-      { enableHighAccuracy: true }
-    );
-  }, []);
+useEffect(() => {
+  if (!navigator.geolocation) {
+    setLocationError("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setUserLocation({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      });
+      setLocationError(null);
+    },
+    (err) => {
+      console.warn("Location error:", err.message);
+
+      if (err.code === 1) {
+        setLocationError("Location permission denied");
+      } else {
+        setLocationError("Unable to fetch location");
+      }
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}, []);
+
 
   const handleMasjidAdd = async (newMasjid) => {
     setMasjids(prev => [...prev, newMasjid]);
@@ -415,6 +377,11 @@ const MasjidDashboard = () => {
       <div className="flex-1 overflow-hidden">
         {activeTab === "prayer-times" ? (
           <div className="flex flex-col h-full">
+
+                <RamadanTimesCard
+      ramadanTimes={ramadanTimes}
+      loading={ramadanLoading}
+    />
             {/* Prayer Times Overview */}
             <div className="p-4 bg-white shadow-sm border-b">
               <div className="mb-4">
@@ -548,6 +515,7 @@ const MasjidDashboard = () => {
                                 </button>
                               )}
                             </div>
+                            <TaraweehInfo masjid={m} />
 
                             <div className="grid grid-cols-5 gap-2">
                               {["fajr", "dhuhr", "asr", "maghrib", "isha"].map((prayer) => {
@@ -675,6 +643,11 @@ const MasjidDashboard = () => {
 
             {/* Masjid List */}
             <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+              <RamadanTimesCard
+                ramadanTimes={ramadanTimes}
+                loading={ramadanLoading}
+               />
+
               {sortedMasjids.length === 0 ? (
                 <div className="text-center py-12">
                   <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -851,6 +824,7 @@ const MasjidDashboard = () => {
                       </span>
                     </div>
                   )}
+                 
                 </div>
 
                 {/* Right Side */}
@@ -945,7 +919,7 @@ const MasjidDashboard = () => {
                   )}
                 </div>
               </div>
-
+                     <TaraweehInfo masjid={selectedMasjid} />
               {/* Phone */}
               {selectedMasjid.phone && (
                 <div className="flex items-center space-x-3">

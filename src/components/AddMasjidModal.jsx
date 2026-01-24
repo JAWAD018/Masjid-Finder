@@ -1,16 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import firebase from "../firebase/firebaseService";
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvents,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
-import {  Clock } from "react-feather";
+import { Clock } from "react-feather";
 import { X } from "react-feather";
 import "leaflet/dist/leaflet.css";
 import { serverTimestamp } from "firebase/firestore";
+import { isRamadanInIndia } from "../utils/isRamadanIndia";
 
 // Fix Leaflet marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
@@ -59,6 +67,10 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
       maghrib: "18:10",
       isha: "19:25",
     },
+    ramadan: {
+      taraweehTime: "",
+      taraweehParah: 1,
+    },
   });
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -80,11 +92,14 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
     if (!searchText) return;
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchText)}&format=json&limit=5`
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchText)}&format=json&limit=5`,
       );
       const data = await res.json();
       if (data[0]) {
-        const loc = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        const loc = {
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon),
+        };
         setFormData({ ...formData, location: loc });
         mapRef.current?.setView([loc.lat, loc.lng], 16);
       }
@@ -94,7 +109,12 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.address || !formData.location ||!formData.userName ) {
+    if (
+      !formData.name ||
+      !formData.address ||
+      !formData.location ||
+      !formData.userName
+    ) {
       alert("Please fill in required fields and select a location");
       return;
     }
@@ -102,7 +122,9 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
     setLoading(true);
     try {
       // Anyone can add, use anonymous id
-      const anonymousId = localStorage.getItem("anonId") || Math.random().toString(36).substring(2, 10);
+      const anonymousId =
+        localStorage.getItem("anonId") ||
+        Math.random().toString(36).substring(2, 10);
       localStorage.setItem("anonId", anonymousId);
 
       const masjidData = {
@@ -111,7 +133,7 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
         reviews: 0,
         createdBy: getAnonUserId(),
         status: "active",
-         createdAt: serverTimestamp(), 
+        createdAt: serverTimestamp(),
       };
 
       const docRef = await firebase.addDoc("masjids", masjidData);
@@ -131,7 +153,10 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
         {/* Header */}
         <div className="sticky top-0 bg-white p-6 border-b z-10 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800">Add New Masjid</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full"
+          >
             <X className="w-6 h-6 text-gray-600" />
           </button>
         </div>
@@ -140,25 +165,33 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
         <div className="p-6 space-y-6 overflow-auto flex-1">
           {/* Basic Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Basic Information</h3>
-             <input
+            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              Basic Information
+            </h3>
+            <input
               type="text"
               placeholder="Your Name *"
               value={formData.userName}
-              onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, userName: e.target.value })
+              }
               className="w-full px-3  py-2 border rounded-lg"
             />
             <input
               type="text"
               placeholder="Masjid Name *"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full px-3 py-2 border rounded-lg"
             />
             <textarea
               placeholder="Address *"
               value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
               className="w-full px-3 py-2 border rounded-lg"
               rows={3}
             />
@@ -166,7 +199,9 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
 
           {/* Map + Search */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">Select Location *</h3>
+            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">
+              Select Location *
+            </h3>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
@@ -175,7 +210,10 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
                 onChange={(e) => setSearchText(e.target.value)}
                 className="flex-1 px-3 py-2 border rounded-lg"
               />
-              <button onClick={handleSearch} className="px-3 py-2 bg-green-600 text-white rounded-lg">
+              <button
+                onClick={handleSearch}
+                className="px-3 py-2 bg-green-600 text-white rounded-lg"
+              >
                 Search
               </button>
             </div>
@@ -188,13 +226,19 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
                 whenCreated={(map) => (mapRef.current = map)}
               >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <LocationSelector location={formData.location} setLocation={(loc) => setFormData({ ...formData, location: loc })} />
+                <LocationSelector
+                  location={formData.location}
+                  setLocation={(loc) =>
+                    setFormData({ ...formData, location: loc })
+                  }
+                />
                 <MapResizeFix />
               </MapContainer>
             </div>
             {formData.location && (
               <p className="text-sm text-gray-600 mt-2">
-                Selected: {formData.location.lat.toFixed(5)}, {formData.location.lng.toFixed(5)}
+                Selected: {formData.location.lat.toFixed(5)},{" "}
+                {formData.location.lng.toFixed(5)}
               </p>
             )}
           </div>
@@ -214,7 +258,10 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        prayerTimes: { ...formData.prayerTimes, [prayer]: e.target.value },
+                        prayerTimes: {
+                          ...formData.prayerTimes,
+                          [prayer]: e.target.value,
+                        },
                       })
                     }
                     className="w-full px-2 py-1 border rounded-lg"
@@ -224,9 +271,63 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
             </div>
           </div>
 
+          {/* Ramadan (Optional) */}
+          {isRamadanInIndia() && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                🌙 Ramadan
+              </h3>
+
+              <div>
+                <label className="text-sm text-gray-700">Taraweeh Time</label>
+                <input
+                  type="time"
+                  value={formData.ramadan.taraweehTime}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      ramadan: {
+                        ...formData.ramadan,
+                        taraweehTime: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-700">
+                  Parah in Taraweeh
+                </label>
+                <select
+                  value={formData.ramadan.taraweehParah}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      ramadan: {
+                        ...formData.ramadan,
+                        taraweehParah: Number(e.target.value),
+                      },
+                    })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  {Array.from({ length: 30 }, (_, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {i + 1} Parah
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
           {/* Facilities */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">Facilities</h3>
+            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">
+              Facilities
+            </h3>
             <div className="grid grid-cols-2 gap-2">
               {facilitiesList.map((f) => (
                 <label
@@ -237,8 +338,18 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
                     type="checkbox"
                     checked={formData.facilities.includes(f)}
                     onChange={(e) => {
-                      if (e.target.checked) setFormData({ ...formData, facilities: [...formData.facilities, f] });
-                      else setFormData({ ...formData, facilities: formData.facilities.filter((fac) => fac !== f) });
+                      if (e.target.checked)
+                        setFormData({
+                          ...formData,
+                          facilities: [...formData.facilities, f],
+                        });
+                      else
+                        setFormData({
+                          ...formData,
+                          facilities: formData.facilities.filter(
+                            (fac) => fac !== f,
+                          ),
+                        });
                     }}
                     className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
                   />
@@ -250,7 +361,10 @@ const AddMasjidModal = ({ userLocation, onClose, onSave }) => {
 
           {/* Buttons */}
           <div className="flex gap-3 pt-4">
-            <button onClick={onClose} className="flex-1 px-6 py-2 border rounded-lg hover:bg-gray-50">
+            <button
+              onClick={onClose}
+              className="flex-1 px-6 py-2 border rounded-lg hover:bg-gray-50"
+            >
               Cancel
             </button>
             <button

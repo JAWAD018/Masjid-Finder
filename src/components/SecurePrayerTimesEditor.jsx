@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import firebase from "../firebase/firebaseService";
 import { X, Save, Phone, Send, AlertCircle, Shield, Loader } from "lucide-react";
+import { isRamadanInIndia } from "../utils/isRamadanIndia";
 
 const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
   const [step, setStep] = useState('phone'); // 'phone' or 'edit'
@@ -17,6 +18,14 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const isRamadan = isRamadanInIndia();
+  const [ramadan, setRamadan] = useState(
+  masjid.ramadan || {
+    taraweehTime: "",
+    taraweehParah: 1,
+  }
+);
+
 
   // Validate phone number format
   const isValidPhone = (phone) => {
@@ -71,84 +80,79 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
   };
 
   // Handle prayer times update request submission
-  const handleRequestSubmit = async () => {
-    setError('');
+const handleRequestSubmit = async () => {
+  setError("");
 
-    // Check if any times actually changed
-    const hasChanges = Object.keys(prayerTimes).some(
-      prayer => prayerTimes[prayer] !== masjid.prayerTimes[prayer]
-    );
+  // 1️⃣ Check changes FIRST
+  const hasPrayerChanges = Object.keys(prayerTimes).some(
+    (p) => prayerTimes[p] !== masjid.prayerTimes[p]
+  );
 
-    if (!hasChanges) {
-      setError('Please modify at least one prayer time before submitting');
-      return;
-    }
+  const hasRamadanChanges =
+    ramadan.taraweehTime !== (masjid.ramadan?.taraweehTime || "") ||
+    ramadan.taraweehParah !== (masjid.ramadan?.taraweehParah || 1);
 
-    setLoading(true);
+  if (!hasPrayerChanges && !hasRamadanChanges) {
+    setError("Please modify at least one prayer or Taraweeh time before submitting");
+    return;
+  }
+if (!isRamadan && hasRamadanChanges) {
+  setError("Taraweeh timings can only be updated during Ramadan");
+  return;
+}
 
-    try {
-      // Create update request in Firestore
-      const requestData = {
+  setLoading(true);
+
+  try {
+    // 2️⃣ UPDATE MASJID DOCUMENT (THIS WAS THE MISSING PIECE)
+    await firebase.updateDoc("masjids", masjid.id, {
+      prayerTimes,
+      ramadan,
+      updatedAt: new Date(),
+    });
+
+    // 3️⃣ LOG UPDATE (history / audit)
+    await firebase.addDoc("updateLogs", {
+      masjidId: masjid.id,
+      updatedBy: phoneNumber,
+      changes: { prayerTimes, ramadan },
+      createdAt: new Date(),
+    });
+
+    // 4️⃣ Optional spam tracking
+    await firebase.addDoc("phoneRequests", {
+      phoneNumber: phoneNumber.trim(),
+      requestTimestamp: new Date(),
+    });
+
+    // 5️⃣ Admin notification (optional)
+    await firebase.addDoc("adminNotifications", {
+      type: "update_applied",
+      title: "Masjid timings updated",
+      message: `${masjid.name} updated by ${phoneNumber}`,
+      data: {
         masjidId: masjid.id,
         masjidName: masjid.name,
-        name: name.trim(),
-        phoneNumber: phoneNumber.trim(),
-        currentTimes: masjid.prayerTimes,
-        requestedTimes: prayerTimes,
-        reason: reason.trim(),
-        status: 'pending',
-        createdAt: new Date(),
-        requesterInfo: {
-          userAgent: navigator.userAgent,
-          timestamp: new Date().toISOString(),
-        }
-      };
+      },
+      read: false,
+      createdAt: new Date(),
+    });
 
-      // Add to updateRequests collection
-      await firebase.addDoc('updateRequests', requestData);
+    setSuccess(true);
 
-      // Track phone request for spam prevention
-      await firebase.addDoc('phoneRequests', {
-        phoneNumber: phoneNumber.trim(),
-        requestTimestamp: new Date()
-      });
+    // 6️⃣ Close modal
+    setTimeout(() => {
+      onClose();
+    }, 2500);
 
-      // Create notification for admins (optional)
-      try {
-        await firebase.addDoc('adminNotifications', {
-          type: 'new_request',
-          title: 'New Prayer Time Update Request',
-          message: `${masjid.name} - ${phoneNumber}`,
-          data: {
-            masjidId: masjid.id,
-            masjidName: masjid.name,
-            phoneNumber: phoneNumber
-          },
-          read: false,
-          createdAt: new Date()
-        });
-      } catch (notificationError) {
-        console.warn('Could not create admin notification:', notificationError);
-      }
+  } catch (err) {
+    console.error("Update failed:", err);
+    setError("Failed to update masjid timings. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-      setSuccess(true);
-
-      // Auto-close after showing success
-      setTimeout(() => {
-        onClose();
-      }, 3000);
-
-    } catch (err) {
-      console.error('Error submitting update request:', err);
-      if (err.message && err.message.includes('Maximum 3 requests')) {
-        setError('You have reached the daily limit of 3 requests. Please try again tomorrow.');
-      } else {
-        setError('Failed to submit request. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Get changed prayer times for display
   const getChangedTimes = () => {
@@ -332,6 +336,50 @@ const SecurePrayerTimesEditor = ({ masjid, onClose, onSave }) => {
                     </div>
                   );
                 })}
+                {/* Ramadan / Taraweeh */}
+{isRamadan && (
+<div className="mt-6 space-y-4">
+  <h3 className="font-medium text-gray-800">🌙 Taraweeh (Ramadan)</h3>
+
+  <div className="flex justify-between items-center">
+    <label className="text-sm font-medium text-gray-700 w-32">
+      Taraweeh Time
+    </label>
+    <input
+      type="time"
+      value={ramadan.taraweehTime}
+      onChange={(e) =>
+        setRamadan({ ...ramadan, taraweehTime: e.target.value })
+      }
+      className="px-3 py-2 border rounded-lg text-sm"
+      disabled={loading}
+    />
+  </div>
+
+  <div className="flex justify-between items-center">
+    <label className="text-sm font-medium text-gray-700 w-32">
+      Parah
+    </label>
+    <select
+      value={ramadan.taraweehParah}
+      onChange={(e) =>
+        setRamadan({
+          ...ramadan,
+          taraweehParah: Number(e.target.value),
+        })
+      }
+      className="px-3 py-2 border rounded-lg text-sm"
+      disabled={loading}
+    >
+      {Array.from({ length: 30 }, (_, i) => (
+        <option key={i + 1} value={i + 1}>
+          {i + 1} Parah
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
+)}
               </div>
 
               {/* Reason for Change */}
