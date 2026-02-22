@@ -1,35 +1,55 @@
 import React from "react";
 
-const isRamadanInIndia = () => {
-  const month = new Intl.DateTimeFormat("en-US-u-ca-islamic", {
-    month: "long",
-    timeZone: "Asia/Kolkata",
-  }).format(new Date());
+// ✅ Ramadan start in Hyderabad (India timezone)
+const RAMADAN_START = "2026-02-19T00:00:00+05:30";
 
-  return month.toLowerCase().includes("ramadan");
+// ✅ Get India date only
+const getIndiaDate = () => {
+  const now = new Date();
+
+  const indiaDate = new Date(
+    now.toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    }),
+  );
+
+  indiaDate.setHours(0, 0, 0, 0);
+
+  return indiaDate;
 };
 
+// ✅ Check Ramadan
+const isRamadanInIndia = () => {
+  const today = getIndiaDate();
+
+  const start = new Date(RAMADAN_START);
+
+  const diff = (today - start) / (1000 * 60 * 60 * 24);
+
+  return diff >= 0 && diff < 30;
+};
+
+// ✅ Correct Roza day
 const getRamadanDayIndia = () => {
-  const hijriDay = new Intl.DateTimeFormat("en-US-u-ca-islamic", {
-    day: "numeric",
-    timeZone: "Asia/Kolkata",
-  }).format(new Date());
+  const today = getIndiaDate();
 
-  const dayNum = Number(hijriDay);
+  const start = new Date(RAMADAN_START);
+
+  const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1;
+
   const suffix =
-    dayNum % 10 === 1 && dayNum !== 11
+    diffDays % 10 === 1 && diffDays !== 11
       ? "st"
-      : dayNum % 10 === 2 && dayNum !== 12
-      ? "nd"
-      : dayNum % 10 === 3 && dayNum !== 13
-      ? "rd"
-      : "th";
+      : diffDays % 10 === 2 && diffDays !== 12
+        ? "nd"
+        : diffDays % 10 === 3 && diffDays !== 13
+          ? "rd"
+          : "th";
 
-  return `${dayNum}${suffix} Ramadan`;
+  return `${diffDays}${suffix} Ramadan`;
 };
 
 const RamadanTimesCard = ({ ramadanTimes, loading }) => {
-  // ⛔ Hide completely outside Ramadan (India)
   if (!isRamadanInIndia()) return null;
 
   if (loading) {
@@ -50,17 +70,18 @@ const RamadanTimesCard = ({ ramadanTimes, loading }) => {
 
   return (
     <div className="m-2 p-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white">
-      <h3 className="font-semibold text-lg mb-3">
-        🌙 {getRamadanDayIndia()}
-      </h3>
+      <h3 className="font-semibold text-lg mb-3">🌙 {getRamadanDayIndia()}</h3>
 
       <div className="flex justify-between">
         <div>
           <p className="text-sm opacity-80">Sehri Ends</p>
+
           <p className="font-bold text-lg">{ramadanTimes.sehriEnd}</p>
         </div>
+
         <div>
           <p className="text-sm opacity-80">Iftar</p>
+
           <p className="font-bold text-lg">{ramadanTimes.iftar}</p>
         </div>
       </div>
