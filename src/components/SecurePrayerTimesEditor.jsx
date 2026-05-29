@@ -125,19 +125,6 @@ if (!isRamadan && hasRamadanChanges) {
       requestTimestamp: new Date(),
     });
 
-    // 5️⃣ Admin notification (optional)
-    await firebase.addDoc("adminNotifications", {
-      type: "update_applied",
-      title: "Masjid timings updated",
-      message: `${masjid.name} updated by ${phoneNumber}`,
-      data: {
-        masjidId: masjid.id,
-        masjidName: masjid.name,
-      },
-      read: false,
-      createdAt: new Date(),
-    });
-
     setSuccess(true);
 
     // 6️⃣ Close modal
@@ -192,7 +179,7 @@ if (!isRamadan && hasRamadanChanges) {
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Request Submitted Successfully!</h3>
               <p className="text-gray-600 mb-4">
-                Your prayer time update request has been sent to the masjid administrators for review.
+               Prayer times updated successfully.
               </p>
               <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
                 <p>Thank You {name}.</p>
@@ -250,21 +237,6 @@ if (!isRamadan && hasRamadanChanges) {
                 <p className="text-xs text-gray-500 mt-1">
                   We only need your number to verify and contact you if necessary, no spam, we promise.
                 </p>
-              </div>
-
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">
-                <div className="flex items-start space-x-2">
-                  <Shield className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium mb-1">Security Notice</p>
-                    <ul className="text-xs space-y-1">
-                      <li>• Prayer times cannot be changed directly</li>
-                      <li>• All requests require admin approval</li>
-                      <li>• Maximum 3 requests per phone per day</li>
-                      <li>• You will not be contacted. This is to prevent spam.</li>
-                    </ul>
-                  </div>
-                </div>
               </div>
 
               <div className="flex space-x-3">
@@ -435,7 +407,7 @@ if (!isRamadan && hasRamadanChanges) {
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      <span>Submit Request</span>
+                      <span>Update Times</span>
                     </>
                   )}
                 </button>
